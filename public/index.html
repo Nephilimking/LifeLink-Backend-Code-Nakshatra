@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeLink</title>
+
+<style>
+body {
+  margin: 0;
+  background: #111;
+  display: flex;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+}
+
+.phone {
+  width: 360px;
+  height: 100vh;
+  background: #fff;
+  border-radius: 25px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen {
+  display: none;
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  position: relative; /* IMPORTANT */
+}
+.active { display: block; }
+
+.logo {
+  width: 120px;
+  display: block;
+  margin: 10px auto;
+}
+
+.center { text-align: center; }
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.red { background: #e53935; color: white; }
+
+.outline {
+  border: 2px solid #e53935;
+  color: #e53935;
+  background: white;
+}
+
+.input {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+}
+
+.grp {
+  padding: 10px;
+  background: #eee;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.grp.active {
+  background: #e53935;
+  color: white;
+}
+
+.urgency {
+  padding: 10px;
+  border-radius: 8px;
+  background: #eee;
+  text-align: center;
+  cursor: pointer;
+}
+.urgency.active {
+  background: #e53935;
+  color: white;
+}
+
+.back {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: #e53935;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+}
+.tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+.tab.active {
+  border-bottom: 2px solid red;
+  color: red;
+}
+
+.small {
+  font-size: 10px;
+  color: #777;
+  text-align: center;
+}
+.small span { color: red; }
+
+.card {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="phone">
+
+<!-- HOME -->
+<div id="home" class="screen active center">
+<img src="logo.png" class="logo">
+<button class="btn red" onclick="go('request')">SOS / Request Blood</button>
+<button class="btn outline" onclick="go('login')">Donor Login / Register</button>
+<button class="btn outline" onclick="go('organ')">Organ Donation</button>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="screen center">
+
+<div class="back" onclick="go('home')">← Back</div>
+
+<img src="logo.png" class="logo">
+
+<div class="input"><input placeholder="Email"></div>
+<div class="input"><input placeholder="Password"></div>
+
+<button class="btn red">Login</button>
+
+<p class="small">
+Don't have an account? 
+<span onclick="go('register')" style="color:#e53935; cursor:pointer; font-weight:bold;">
+Create New Account
+</span>
+</p>
+</div>
+
+<!-- REGISTER -->
+<div id="register" class="screen center">
+
+<div class="back" onclick="go('login')">← Back</div>
+<img src="logo.png" class="logo">
+
+<h2>Create New Account</h2>
+
+<div class="input">
+  <input type="email" placeholder="Email / Username">
+</div>
+
+<div class="input">
+  <input type="password" placeholder="Password">
+</div>
+
+<div class="input">
+  <input type="password" placeholder="Confirm Password">
+</div>
+
+<div class="input">
+  <input type="tel" placeholder="Phone Number">
+</div>
+
+<div class="input">
+  <input id="captchaInput" placeholder="Enter Captcha">
+</div>
+
+<div class="card center" style="font-weight:bold; letter-spacing:3px;">
+  <span id="captchaText"></span>
+</div>
+
+<button class="btn outline" onclick="generateCaptcha()">Refresh Captcha</button>
+
+<button class="btn red" onclick="validateRegister()">Create Account</button>
+
+</div>
+
+<!-- REQUEST -->
+<div id="request" class="screen">
+<div class="back" onclick="go('home')">← Back</div>
+<img src="logo.png" class="logo">
+
+<h3>Request Blood</h3>
+
+<div class="input"><input id="patientName" placeholder="Patient Name"></div>
+<div class="input"><input id="age" placeholder="Age"></div>
+
+<b>Blood Group</b>
+<div class="grid">
+<div class="grp">A+</div>
+<div class="grp">A-</div>
+<div class="grp active">B+</div>
+<div class="grp">B-</div>
+<div class="grp">O+</div>
+<div class="grp">O-</div>
+<div class="grp">AB+</div>
+<div class="grp">AB-</div>
+</div>
+
+<br>
+
+<div class="input"><input id="hospital" placeholder="Hospital"></div>
+<div class="input"><input id="locationInput" placeholder="Location"></div>
+
+<button class="btn outline" onclick="getLocation()">Use Location</button>
+<button class="btn red" onclick="sendRequest()">Send Request</button>
+</div>
+
+<!-- ORGAN -->
+<div id="organ" class="screen">
+<div class="back" onclick="go('home')">← Back</div>
+<img src="logo.png" class="logo">
+
+<div class="tabs">
+<div class="tab active" onclick="openTab(event,'reg')">Register</div>
+<div class="tab" onclick="openTab(event,'guide')">Guide</div>
+</div>
+
+<div id="reg" class="tabContent">
+<p>Register on official government portal</p>
+<button class="btn red" onclick="openNOTTO()">Go to NOTTO</button>
+</div>
+
+<div id="guide" class="tabContent" style="display:none;">
+<ul>
+<li>Heart</li>
+<li>Kidney</li>
+<li>Liver</li>
+<li>Lungs</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+window.go = function(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+};
+
+/* CAPTCHA */
+function generateCaptcha() {
+  const chars = "ABCDEFGH123456789";
+  let captcha = "";
+  for (let i = 0; i < 5; i++) {
+    captcha += chars[Math.floor(Math.random() * chars.length)];
+  }
+  document.getElementById("captchaText").innerText = captcha;
+  window.currentCaptcha = captcha;
+}
+
+function validateRegister() {
+  const inputs = document.querySelectorAll("#register input");
+
+  const password = inputs[1].value;
+  const confirm = inputs[2].value;
+  const captcha = inputs[4].value;
+
+  if (password !== confirm) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  if (captcha !== window.currentCaptcha) {
+    alert("Captcha incorrect");
+    return;
+  }
+
+  alert("Account created successfully!");
+  go('login');
+}
+
+generateCaptcha();
+
+});
+</script>
+
+</body>
+</html>

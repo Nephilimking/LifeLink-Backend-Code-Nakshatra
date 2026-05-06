@@ -6,25 +6,33 @@ const cors = require("cors");
 
 const app = express();
 
+// 🔹 Middlewares
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err));
+// 🔹 Serve frontend files
+app.use(express.static("public"));
 
+// 🔹 MongoDB connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 
-// Donor routes
+// 🔹 Routes
 const donorRoutes = require("./routes/donorRoutes");
 app.use("/donors", donorRoutes);
 
 const requestRoutes = require("./routes/requestRoutes");
 app.use("/requests", requestRoutes);
 
-
+// 🔹 Home route
 app.get("/", (req, res) => {
   res.send("LifeLink Backend Running");
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+// 🔹 Start server
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
