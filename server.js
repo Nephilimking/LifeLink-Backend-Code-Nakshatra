@@ -26,8 +26,10 @@ const requestRoutes = require("./routes/requestRoutes");
 app.use("/requests", requestRoutes);
 
 // 🔹 Home route
+const path = require("path");
+
 app.get("/", (req, res) => {
-  res.send("LifeLink Backend Running");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // 🔹 Start server
