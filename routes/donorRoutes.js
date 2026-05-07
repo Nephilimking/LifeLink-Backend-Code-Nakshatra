@@ -2,37 +2,44 @@ const express = require("express");
 const router = express.Router();
 const Donor = require("../models/Donor");
 
-// 🔹 Register donor
-router.post("/register", async (req, res) => {
+// 🔹 Create New Donor Profile
+router.post("/create", async (req, res) => {
   try {
-    const { name, bloodGroup, lat, lng } = req.body;
+    const { name, phone, dob, bloodGroup, weight, lat, lng, available } = req.body;
 
     // Validation
-    if (!name || !bloodGroup || lat == null || lng == null) {
+    if (!name || !phone || !bloodGroup || lat == null || lng == null) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required"
+        message: "Missing required fields"
       });
     }
 
     const donor = new Donor({
       name,
+      phone,
+      dob,
       bloodGroup,
+      weight,
       lat,
       lng,
-      available: true
+      available: available !== undefined ? available : true
     });
 
     await donor.save();
 
-    res.json({
+    res.status(201).json({
       success: true,
-      message: "Donor registered successfully",
+      message: "Donor profile created successfully!",
       data: donor
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error saving donor:", err);
+    res.status(500).json({ 
+      success: false, 
+      error: err.message 
+    });
   }
 });
 
