@@ -382,7 +382,7 @@ async function saveDonorProfile() {
   }
 
   try {
-    const response = await fetch("http://localhost:3000/donors/create", { 
+    const response = await fetch("/donors/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -418,7 +418,7 @@ async function loadDashboardRequests() {
   container.innerHTML = '<p style="text-align:center; color:#aaaaaa; padding: 20px;">Fetching live requests...</p>';
 
   try {
-    const response = await fetch("http://localhost:3000/requests");
+    const response = await fetch("/requests");
     const result = await response.json();
 
     if (result.success && result.data.length > 0) {
@@ -459,7 +459,7 @@ async function loadDashboardRequests() {
 
 async function acceptRequest(id) {
   try {
-    const response = await fetch(`http://localhost:3000/requests/accept/${id}`, {
+    const response = await fetch(/requests/accept/${id}, {
       method: "PATCH"
     });
     const result = await response.json();
@@ -533,7 +533,7 @@ async function sendRequest(){
   }
   
   try {
-    const response = await fetch("http://localhost:3000/requests/create", {
+    const response = await fetch("/requests/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
